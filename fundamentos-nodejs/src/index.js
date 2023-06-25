@@ -2,8 +2,6 @@ const express = require('express');
 
 const app = express();
 
-app.use(express.json);
-
 /*
  * GET - Buscar uma informação dentro do servidor 
  * POST - Inserir informações no servidor
@@ -20,7 +18,9 @@ app.use(express.json);
  ******* O query params é opcional, diferente do route params
  * Body Params => Os objetos inserção/alteração (JSON)
 
-*/
+app.use(JSON) é obrigatório ao usar JSON no post */
+app.use(express.json);
+
 
 app.get("/courses",  (request, response) => {
     const query = request.query;
@@ -49,13 +49,8 @@ app.patch("/courses/:id",  (request, response) => {
         ]);
     });
 
-/* app.patch("/courses/:id", (request, response) => {
-    return response.json(["Curso 6", "Curso 7", "Curso 3", "Curso 4"]);
-}) */
-
-/* app.delete("/courses/:id" , (request, response) => {
+app.delete("/courses/:id" , (request, response) => {
     return response.json(["Curso 6", "Curso 7", "Curso 4"]);
-}) */
+})
 
 app.listen(3333);
-
