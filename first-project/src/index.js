@@ -61,8 +61,26 @@ app.get("/statement", verifyIfExistsAccountCPF, (request, response) => {
 })
 
 // @POST - Deposito
-app.post("deposit", verifyIfExistsAccountCPF, (request, response) => {
+app.post("/deposit", verifyIfExistsAccountCPF, (request, response) => {
+    const { description, amount} = request.body;
 
+    const { costumer} = request;
+
+    const statementOperation = {
+        description,
+        amount,
+        created_at: new Date(),
+        type: "credit"
+    }
+    
+    costumer.statement.push(statementOperation);
+
+    return response.status(201).send();
+})
+
+// @POST = Saque
+app.post("/withdraw", verifyIfExistsAccountCPF, (request, response) => {
+    
 })
 
 app.listen(4444);
