@@ -12,8 +12,10 @@ const server = http.createServer(async (req, response) => {
     }
     
     try{
-    const body = JSON.parse(Buffer.concat(buffers).toString());
-    } catch
+    req.body = JSON.parse(Buffer.concat(buffers).toString());
+    } catch {
+        req.body = null
+    }
 
 
     if (method === 'GET' && url === "/users"){
@@ -24,7 +26,7 @@ const server = http.createServer(async (req, response) => {
     }
 
     if (method === "POST" && url === "/users"){
-        const { name, email } = body
+        const { name, email } = req.body
 
         users.push({
             ida: 1,
