@@ -161,4 +161,5 @@ app.get("/balance", verifyIfExistsAccountCPF, (request , response) => {
     return response.json(balance)
 });
 
+// Define a porta do local host
 app.listen(4444);
