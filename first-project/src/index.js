@@ -111,4 +111,54 @@ app.post("/withdraw", verifyIfExistsAccountCPF, (request, response) => {
 
 })
 
+// @GET - Verificando extrato bancario pela data
+app.get("/statement/date", verifyIfExistsAccountCPF, (request, response) => {
+    const { costumer } = request
+    const { date } = request.query;
+
+    const dateFormat = new Date(date + " 00:00")
+
+    const statement = costumer.statement.filter((statement) => 
+    statement.created_at.toDateString() === new Date(dateFormat).toDateString())
+
+    return response.json(costumer.statement);
+})
+
+// @PUT - alterando os dados da conta
+app.put("account", verifyIfExistsAccountCPF, (request,response) =>  {
+    const {name} = request.body;
+    const {costumer} = request
+
+    costumer.name = name;
+
+    return response.status(201).send();
+});
+
+// @GET - Verificando os dados da conta
+app.get("/account", verifyIfExistsAccountCPF, (request, response) => {
+    const { costumer } = request;
+
+    return response.json(costumer);
+
+});
+
+// @DELETE - Deletando conta
+app.delete("/acconunt", verifyIfExistsAccountCPF, (response, request) => {
+    const { costumer } = request;
+
+    //splice
+    costumer.splice(costumer, 1);
+
+    return response.status(200).json(costumers);
+});
+
+// @GET - Retornar o balance
+app.get("/balance", verifyIfExistsAccountCPF, (request , response) => {
+    const { costumer } = request;
+
+    const balance = getBalance(costumer.statement);
+
+    return response.json(balance)
+});
+
 app.listen(4444);
