@@ -37,7 +37,7 @@ app.post("/account", (request, response) => {
     return response.status(201).send();
 });
 
-//Middleware para o @GET
+//Middleware que verifica se a conta existe pelo CPF
 function verifyIfExistsAccountCPF(request, response, next) {
     const { cpf } = request.headers;
 
@@ -52,7 +52,16 @@ function verifyIfExistsAccountCPF(request, response, next) {
     return next();
 }
 
-//app.use(verifyIfExistsAccountCPF);
+// Middleware que verifica o saldo da conta
+function getBalance(statement) {
+    statement.reduce((acc, operation) => {
+        
+    })
+}
+
+
+//Caso o middleware fosse para todas as apis app.use(verifyIfExistsAccountCPF);
+
 
 /* @GET - Listando extrato e validando a conta */
 app.get("/statement", verifyIfExistsAccountCPF, (request, response) => {
@@ -80,7 +89,26 @@ app.post("/deposit", verifyIfExistsAccountCPF, (request, response) => {
 
 // @POST = Saque
 app.post("/withdraw", verifyIfExistsAccountCPF, (request, response) => {
-    
+    const { amount } = request.body;
+    const { costumer } = request;
+
+    const balance = getBalance(costumer.statement);
+
+    if(balance < account) {
+        return response.status(400).json({error:"Insufificient funds!"});
+    }
+
+    const statementOperation = {
+        amount,
+        created_at: new Date(),
+        type: "débit"
+    };
+
+    costumer.statement.push(statementOperation);
+
+    return response.status(201).send();
+
+
 })
 
 app.listen(4444);
