@@ -3,8 +3,9 @@
 /* process.stdin
 .pipe(process.stdout) */
 
-import { Readable } from 'node:stream'
+import { Readable, Writable, Transform } from 'node:stream'
 
+// Stream de leitura
 class OneToHundreadStream extends Readable{
     index = 1
     
@@ -23,5 +24,24 @@ class OneToHundreadStream extends Readable{
     }
   }
 
+// Stream de escrita
+class MultiplyByTenStream extends Writable {
+    _write(chunk, encoding, callback) {
+        console.log(Number(chunk.toString()) * 10)
+        callback()
+    }
+
+  }
+
+  // Stream de transformação
+class InverseNumberStream extends Transform {
+    _transform(chunk, encoding, callback) {
+        const transformed = Number(chunk.toString() * -1)
+
+        callback(null, Buffer.from(String(transformed)))
+    }
+}
+
 new OneToHundreadStream()
-.pipe(process.stdout)
+.pipe( new InverseNumberStream)
+.pipe(new MultiplyByTenStream)
