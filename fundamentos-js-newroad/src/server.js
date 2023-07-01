@@ -1,47 +1,35 @@
 import http from 'node:http';
+import { json } from './middlewares/json.js';
+import { routes } from './routes.js';
+import { extrectQueryParams } from './utils/extract-query-params.js';
 
-const users = [];
+//Query Parameters
+//Route Parameters
+// Request Body; 
 
-const server = http.createServer(async (req, response) => {
+const server = http.createServer(async (req, res) => {
     const { method, url } = req;
 
-    const buffers = []
+    await json(req, res)
 
-    for await (const chunk of req){
-        buffers.push(chunk)
+    const route = routes.find(route => {
+        return route.method === method && route.path.test(url)
+    })
+
+    if (route) {
+        const routeParams = req.url.match(route.path)
+
+        // console.log(extrectQueryParams(routeParams.groups.query))
+
+        const { query, ...params } = routeParams.groups
+
+        req.params = params
+        req.query = query ? extrectQueryParams(query) : {}
+
+        return route.handler(req, res)
     }
-    
-    try{
-    req.body = JSON.parse(Buffer.concat(buffers).toString());
-    } catch {
-        req.body = null
-    }
-
-
-    if (method === 'GET' && url === "/users"){
-
-        return response
-        .setHeader('Content-type', 'application/json')
-        .end(JSON.stringify(users))
-    }
-
-    if (method === "POST" && url === "/users"){
-        const { name, email } = req.body
-
-        users.push({
-            ida: 1,
-            name,
-            email
-        })
-
-        return response.writeHead(201).end();
-    }
-
 
     return response.writeHead(404).end();
 })
 
-server.listen(5555)
-
-
-
+server.listen(8888)
